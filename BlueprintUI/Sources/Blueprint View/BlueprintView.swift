@@ -268,15 +268,7 @@ extension BlueprintView {
             viewDescription = node.viewDescription
             layoutAttributes = node.layoutAttributes
 
-            if appearanceTransitionsEnabled, let transition = viewDescription.updateTransition {
-                transition.perform(in: view) {
-                    self.viewDescription.apply(to: self.view)
-                }
-            } else {
-                viewDescription.apply(to: view)
-            }
-
-
+            viewDescription.apply(to: view)
             
             var oldChildren: [ElementPath: NativeViewController] = [:]
             oldChildren.reserveCapacity(children.count)
@@ -318,7 +310,13 @@ extension BlueprintView {
 
                         contentView.insertSubview(controller.view, at: index)
 
+                        if appearanceTransitionsEnabled, let transition = self.viewDescription.updateTransition {
+                            transition.perform(in: self.view) {
+                                controller.update(node: child, appearanceTransitionsEnabled: true)
+                            }
+                        } else {
                         controller.update(node: child, appearanceTransitionsEnabled: true)
+                        }
                     }
                 } else {
                     let controller = NativeViewController(node: child)
